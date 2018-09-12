@@ -4,6 +4,7 @@ using System.Data.Entity.Infrastructure.MappingViews;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Data.Entity;       // da inludere per utilizzate  l'estensione "Include" nel metodo Index
 using Vidly.Models;
 using Vidly.ViewModels;
 
@@ -11,40 +12,52 @@ namespace Vidly.Controllers
 {
     public class MoviesController : Controller
     {
-        List<Movie> movies = new List<Movie>()
-                     {
-                         new Movie() {Name = "Shrek"},
-                         new Movie() {Name = "Wall-e"}
+        //List<Movie> movies = new List<Movie>()
+        //             {
+        //                 new Movie() {Name = "Shrek"},
+        //                 new Movie() {Name = "Wall-e"}
 
-                     };
-        List<Customer> customers = new List<Customer>()
-                        {
-                            new Customer {Name = "John Smith"},
-                            new Customer {Name = "Mary Williams"}
-                        };
+        //             };
+        //List<Customer> customers = new List<Customer>()
+        //                {   
+        //                    new Customer {Name = "John Smith"},
+        //                    new Customer {Name = "Mary Williams"}
+        //                };
 
 
-        // GET: Movies/Random
-        public ActionResult Random()
-        {
+        //// GET: Movies/Random
+        //public ActionResult Random()
+        //{
             
-            var viewModel = new RandomMovieViewModel
-                            {
-                                Movies = movies,
-                                Customers = customers
-                            };
-            return View(viewModel);
+        //    var viewModel = new RandomMovieViewModel
+        //                    {
+        //                        Movies = movies,
+        //                        Customers = customers
+        //                    };
+        //    return View(viewModel);
+        //}
+
+
+        private ApplicationDbContext _context;
+        public MoviesController()
+        {
+            _context = new ApplicationDbContext();
         }
+        protected override void Dispose(bool disposing)
+        {
+            _context.Dispose();
+        }
+
 
         public ViewResult Index()
         {
-            var movies = GetMovies();
+            var movies = _context.Movies.Include(m => m.Genre).ToList();
             return View(movies);
         }
 
         public ActionResult Details(int id)
         {
-            var movie = GetMovies().SingleOrDefault(c => c.Id == id);
+            var movie = _context.Movies.Include(m => m.Genre).SingleOrDefault(c => c.Id == id);
 
             if (movie == null)
                 return HttpNotFound();

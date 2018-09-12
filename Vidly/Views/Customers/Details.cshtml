@@ -6,4 +6,15 @@
 }
 
 <h2>@Model.Name</h2>
-
+<ul>
+    <li>
+        <p>Membership Type: @Model.MembershipType.Name</p>
+    </li>
+    @if (Model.BirthDate.HasValue)
+    {
+        var date = Model.BirthDate.GetValueOrDefault();
+        <li>
+            <p>Birdthdate: @date.ToShortDateString()</p>
+        </li>
+    }
+</ul>

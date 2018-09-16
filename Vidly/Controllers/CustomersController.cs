@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Data.Entity;       // da inludere per utilizzate  l'estensione "Include" nel metodo Index
+using System.Data.Entity;
+using System.Data.Entity.Infrastructure.MappingViews;
+// da inludere per utilizzate  l'estensione "Include" nel metodo Index
 using System.Web;
 using System.Web.Mvc;
 using Vidly.Models;
+using Vidly.ViewModels;
 
 
 namespace Vidly.Controllers
@@ -24,11 +27,28 @@ namespace Vidly.Controllers
             _context.Dispose();
         }
 
+        public ActionResult New()
+        {
+            var membershipTypes = _context.MembershipTypes.ToList();
+            var viewModel = new NewCustomerViewModel
+                            {
+                                MembershipTypes = membershipTypes
+                            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public ActionResult Create(Customer customer)
+        {
+            return View();
+        }
+
         // GET: Customers
         public ActionResult Index()
         {
             // con ToList la query non vine piu' eseguita in maniera differita.
-            // alcontrario, questa vine eseguita immediatamente, e ritorna subito
+            // al contrario, questa vine eseguita immediatamente, e ritorna subito
             // la lista degli elementi
             // Eager Loading
             var customers = _context.Customers.Include(c => c.MembershipType).ToList();

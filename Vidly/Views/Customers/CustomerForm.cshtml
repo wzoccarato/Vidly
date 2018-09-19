@@ -1,4 +1,4 @@
-﻿@model Vidly.ViewModels.NewCustomerViewModel
+﻿@model Vidly.ViewModels.CustomerFormViewModel
 
 @{
     ViewBag.Title = "New";
@@ -7,7 +7,7 @@
 
 <h2>New Customer</h2>
 
-@using (Html.BeginForm("Create", "Customers"))
+@using (Html.BeginForm("Save", "Customers"))
 {
     <div class="form-group">
         @Html.LabelFor(m => m.Customer.Name)
@@ -17,7 +17,11 @@
         @Html.LabelFor(m => m.Customer.BirthDate)
         @* quella che segue si puo' utilizzare in alternativa a DataAnnotations (che si trova nella definizione della classe Customer) *@
         @*<label for="BirthDate">Date of Birth</label>*@
-        @Html.TextBoxFor(m => m.Customer.BirthDate,new {@class = "form-control"})
+        @Html.TextBoxFor(m => m.Customer.BirthDate,"{0:d MMM yyyy}",new {@class = "form-control"})
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Customer.MembershipTypeId)
+        @Html.DropDownListFor(m => m.Customer.MembershipTypeId,new SelectList(Model.MembershipTypes,"Id","Name"),"Select Membership Type", new {@class = "form-control"})
     </div>
     <div class="checkbox">
         <label>
@@ -25,9 +29,6 @@
             @Html.CheckBoxFor(m => m.Customer.IsSuscribedToNewsLetter) Suscribed to Newsletter?
         </label>
     </div>
-    <div class="form-group">
-        @Html.LabelFor(m => m.Customer.MembershipTypeId)
-        @Html.DropDownListFor(m => m.Customer.MembershipTypeId,new SelectList(Model.MembershipTypes,"Id","Name"),"Select Membership Type", new {@class = "form-control"})
-    </div>
+    @Html.HiddenFor(m => m.Customer.Id);
     <button type="submit" class="btn btn-primary">Save</button>
 }

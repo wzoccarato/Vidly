@@ -53,7 +53,7 @@ namespace Vidly.Controllers
                 // quella che segue e' molto meglio di aggiornare tutte le
                 // proprieta'a mano. Utilizza Automapper
 
-                // Mapper.Map(customer, CustomerInDb);
+                // Mapper.Map(customer, CustomerInDb); 
 
                 customerInDb.Name = customer.Name;
                 customerInDb.BirthDate = customer.BirthDate;

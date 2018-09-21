@@ -4,7 +4,10 @@ using System.Data.Entity.Infrastructure.MappingViews;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using System.Data.Entity;       // da inludere per utilizzate  l'estensione "Include" nel metodo Index
+using System.Data.Entity;
+using System.Security.Cryptography.X509Certificates;
+using System.Web.UI.WebControls;
+// da inludere per utilizzate  l'estensione "Include" nel metodo Index
 using Vidly.Models;
 using Vidly.ViewModels;
 
@@ -48,20 +51,56 @@ namespace Vidly.Controllers
             _context.Dispose();
         }
 
-
         public ViewResult Index()
         {
             var movies = _context.Movies.Include(m => m.Genre).ToList();
             return View(movies);
         }
 
-        public ActionResult Details(int id)
+        [HttpPost]
+        public ActionResult Create()
+        {
+            if (Request.Form["BtnCreate"] != null)
+            {
+                return RedirectToAction("NewMovie");
+            }
+
+            throw new NotImplementedException();
+        }
+
+
+        public ViewResult NewMovie()
+        {
+            var viewModel = new NewMovieViewModel
+                            {
+                                Movie = new Movie(),
+                                Genres = _context.Genres.ToList()
+                            };
+            viewModel.Movie.ReleaseDate = DateTime.Today;
+            return View(viewModel);
+        }
+
+
+        [HttpPost]
+        public ViewResult Save()
+        {
+            throw new InvalidOperationException();
+        }
+
+        public ActionResult Edit(int id)
         {
             var movie = _context.Movies.Include(m => m.Genre).SingleOrDefault(c => c.Id == id);
 
             if (movie == null)
                 return HttpNotFound();
-            return View(movie);
+
+            var viewModel = new NewMovieViewModel
+                            {
+                                Movie = movie,
+                                Genres = _context.Genres.ToList()
+                            };
+
+            return View(viewModel);
         }
 
         private IEnumerable<Movie> GetMovies()

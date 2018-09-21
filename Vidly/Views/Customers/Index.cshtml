@@ -45,3 +45,9 @@ else
         </tbody>
     </table>
 }
+<p>
+    @using (Html.BeginForm("Create", "Customers"))
+    {
+        <button type="submit" name="btnCreate" class="btn btn-primary">New Customer</button>
+    }
+</p>

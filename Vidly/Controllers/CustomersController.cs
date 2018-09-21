@@ -66,6 +66,17 @@ namespace Vidly.Controllers
             return RedirectToAction("Index", "Customers");
         }
 
+        [HttpPost]
+        public ActionResult Create()
+        {
+            if (Request.Form["BtnCreate"] != null)
+            {
+                return RedirectToAction("New","Customers");
+            }
+
+            throw new NotImplementedException();
+        }
+
         // GET: Customers
         public ActionResult Index()
         {

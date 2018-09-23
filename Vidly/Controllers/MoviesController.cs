@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Data.Entity;
+using System.Data.Entity.Validation;
 using System.Security.Cryptography.X509Certificates;
 using System.Web.UI.WebControls;
 // da inludere per utilizzate  l'estensione "Include" nel metodo Index
@@ -42,10 +43,12 @@ namespace Vidly.Controllers
 
 
         private ApplicationDbContext _context;
+
         public MoviesController()
         {
             _context = new ApplicationDbContext();
         }
+
         protected override void Dispose(bool disposing)
         {
             _context.Dispose();
@@ -53,81 +56,101 @@ namespace Vidly.Controllers
 
         public ViewResult Index()
         {
+            // Eager Loading
             var movies = _context.Movies.Include(m => m.Genre).ToList();
             return View(movies);
         }
 
-        [HttpPost]
-        public ActionResult Create()
+
+        public ViewResult New()
         {
-            if (Request.Form["BtnCreate"] != null)
+            var genres = _context.Genres.ToList();
+
+            var viewModel = new MovieFormViewModel
             {
-                return RedirectToAction("NewMovie");
-            }
+                Genres = genres,
+                Movie = new Movie()
+            };
 
-            throw new NotImplementedException();
-        }
-
-
-        public ViewResult NewMovie()
-        {
-            var viewModel = new NewMovieViewModel
-                            {
-                                Movie = new Movie(),
-                                Genres = _context.Genres.ToList()
-                            };
-            viewModel.Movie.ReleaseDate = DateTime.Today;
-            return View(viewModel);
-        }
-
-
-        [HttpPost]
-        public ViewResult Save()
-        {
-            throw new InvalidOperationException();
+            return View("MovieForm", viewModel);
         }
 
         public ActionResult Edit(int id)
         {
-            var movie = _context.Movies.Include(m => m.Genre).SingleOrDefault(c => c.Id == id);
+            var movie = _context.Movies.SingleOrDefault(c => c.Id == id);
 
             if (movie == null)
                 return HttpNotFound();
 
-            var viewModel = new NewMovieViewModel
+            var viewModel = new MovieFormViewModel
                             {
                                 Movie = movie,
                                 Genres = _context.Genres.ToList()
                             };
 
-            return View(viewModel);
+            return View("MovieForm", viewModel);
         }
 
-        private IEnumerable<Movie> GetMovies()
+        //public ActionResult Details(int id)
+        //{
+        //    var movie = _context.Movies.Include(m => m.Genre).SingleOrDefault(m => m.Id == id);
+
+        //    if (movie == null)
+        //        return HttpNotFound();
+
+        //    return View(movie);
+        //}
+
+
+        // GET: Movies/Random
+        //public ActionResult Random()
+        //{
+        //    var movie = new Movie() { Name = "Shrek!" };
+        //    var customers = new List<Customer>
+        //                    {
+        //                        new Customer { Name = "Customer 1" },
+        //                        new Customer { Name = "Customer 2" }
+        //                    };
+
+        //    var viewModel = new RandomMovieViewModel
+        //                    {
+        //                        Movies = movie,
+        //                        Customers = customers
+        //                    };
+        //    return View(viewModel);
+        //}
+
+        [HttpPost]
+        public ActionResult Save(Movie movie)
         {
-            return new List<Movie>
+            if (movie.Id == 0)
             {
-               new Movie { Id = 1, Name = "Shrek" },
-               new Movie { Id = 2, Name = "Wall-e" }
-            };
+                movie.DateAdded = DateTime.Now;
+                _context.Movies.Add(movie);
+            }
+            else
+            {
+                var movieInDb = _context.Movies.Single(c => c.Id == movie.Id);
+
+                // questa NON utilizzarla. introduce un problema di sicuressa
+                //TryUpdateModel(customerInDb);
+
+                // quella che segue e' molto meglio di aggiornare tutte le
+                // proprieta'a mano. Utilizza Automapper
+
+                // Mapper.Map(customer, CustomerInDb); 
+
+
+                movieInDb.Name = movie.Name;
+                movieInDb.GenreId = movie.GenreId;
+                movieInDb.NumberInStock = movie.NumberInStock;
+                movieInDb.ReleaseDate = movie.ReleaseDate;
+                movieInDb.DateAdded = movie.DateAdded;
+            }
+
+            _context.SaveChanges();
+            
+            return RedirectToAction("Index", "Movies");
         }
-
-
-
-            //[Route("movies/released/{year:regex(\\{d4})}/{month:regex(\\{d2}):range(1,12)}")]
-            //public ActionResult ByReleaseDate(int year,int month)
-            //{
-            //    return Content($"{year}/{month}");
-            //}
-
-            //public ActionResult ShowMovie(int id)
-            //{
-            //    var viewModel = new RandomMovieViewModel
-            //                    {
-            //                        Movies = movies,
-            //                        Customers = customers
-            //                    };
-            //    return View(viewModel);
-            //}    
     }
 }

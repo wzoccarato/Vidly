@@ -6,6 +6,7 @@ using System.Data.Entity.Infrastructure.MappingViews;
 // da inludere per utilizzate  l'estensione "Include" nel metodo Index
 using System.Web;
 using System.Web.Mvc;
+using Microsoft.Owin.Security.Provider;
 using Vidly.Models;
 using Vidly.ViewModels;
 
@@ -31,9 +32,9 @@ namespace Vidly.Controllers
         {
             var membershipTypes = _context.MembershipTypes.ToList();
             var viewModel = new CustomerFormViewModel
-                            {
-                                MembershipTypes = membershipTypes
-                            };
+            {
+                MembershipTypes = membershipTypes
+            };
 
             return View("CustomerForm",viewModel);
         }
@@ -41,6 +42,15 @@ namespace Vidly.Controllers
         [HttpPost]
         public ActionResult Save(Customer customer)
         {
+            if (!ModelState.IsValid)
+            {
+                var viewModel = new CustomerFormViewModel
+                                {
+                                    Customer = customer,
+                                    MembershipTypes = _context.MembershipTypes.ToList()
+                                };
+                return View("CustomerForm",viewModel);
+            }
             if (customer.Id == 0)
                 _context.Customers.Add(customer);
             else
@@ -95,12 +105,14 @@ namespace Vidly.Controllers
 
             if (customer == null)
                 return HttpNotFound();
+
             return View(customer);
         }
 
         public ActionResult Edit(int id)
         {
             var customer = _context.Customers.SingleOrDefault(c => c.Id == id);
+
             if (customer == null)
                 return HttpNotFound();
 

@@ -1,4 +1,4 @@
-﻿@model Vidly.ViewModels.NewMovieViewModel
+﻿@model Vidly.ViewModels.MovieFormViewModel
 
 @{
     ViewBag.Title = "Edit";
@@ -9,28 +9,28 @@
 
 @using (Html.BeginForm("Save", "Movies"))
 {
+    // questa ritorna a tutti gli effetti una classe Movie, perche' tutti i compi riportati
+    // Qui sotto sono a tutti gli effetti uno scaffolding della classe Movie
     <div class="form-group">
         @Html.LabelFor(m => m.Movie.Name)
         @Html.TextBoxFor(m => m.Movie.Name, new { @class = "form-control" })
-    </div>
-    <div class="form-group">
-        @Html.LabelFor(m => m.Movie.Genre)
-        @* TODO il valore visualizzato di default deve essere quello gia' presente nel movie *@
-        @Html.DropDownListFor(m => m.Genres, new SelectList(Model.Genres, "Id", "Name"), new { @class = "form-control" })
     </div>
     <div>
         @Html.LabelFor(m => m.Movie.ReleaseDate)
         @Html.TextBoxFor(m => m.Movie.ReleaseDate, "{0:d MMM yyyy}", new { @class = "form-control" })
     </div>
-    <div>
-        @Html.LabelFor(m => m.Movie.DateAdded)
-        @Html.TextBoxFor(m => m.Movie.DateAdded, "{0:d MMM yyyy}", new { @class = "form-control" })
+    <div class="form-group">
+        @Html.LabelFor(m => m.Movie.GenreId)
+        @* TODO il valore visualizzato di default deve essere quello gia' presente nel movie *@
+        @Html.DropDownListFor(m => m.Movie.GenreId, new SelectList(Model.Genres, "Id", "Name"), new { @class = "form-control" })
     </div>
     <div class="form-group">
         @Html.LabelFor(m => m.Movie.NumberInStock)
         @* TODO questa textbox deve accettare soltanto interi. vedere come si fa *@
         @Html.TextBoxFor(m => m.Movie.NumberInStock, new { @class = "form-control" })
     </div>
-
+    
+    @Html.HiddenFor(m => m.Movie.DateAdded)
+    @Html.HiddenFor(m => m.Movie.Id)
     <button type="submit" class="btn btn-primary">Save</button>
 }

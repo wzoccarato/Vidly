@@ -9,23 +9,25 @@
 
 <table class="table table-bordered table-hover">
     <thead>
-    <tr>
-        <th>Movie</th>
-    </tr>
+        <tr>
+            <th>Movie</th>
+            <th>Genre</th>
+        </tr>
     </thead>
     <tbody>
-    @foreach (var movie in Model)
-    {
+        @foreach (var movie in Model)
         {
-            <tr>
-                <td>@Html.ActionLink(movie.Name, "Edit", "Movies", new { id = movie.Id }, null)</td>
-            </tr>
+            {
+                <tr>
+                    <td>@Html.ActionLink(movie.Name, "Edit", "Movies", new { id = movie.Id }, null)</td>
+                    <td>@movie.Genre.Name</td>
+                </tr>
+            }
         }
-    }
     </tbody>
 </table>
 <p>
-    @using (Html.BeginForm("Create", "Movies"))
+    @using (Html.BeginForm("New", "Movies"))
     {
         <button type="submit" name="btnCreate" class="btn btn-primary">New Movie</button>
     }
